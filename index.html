@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ayush Pasekar | Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0a0a0a; }
+        .bento-card {
+            background-color: #121212;
+            border: 1px solid #1f1f1f;
+            border-radius: 2rem;
+            padding: 2.5rem;
+        }
+    </style>
+</head>
+<body class="text-white font-sans p-6 md:p-12">
+
+    <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bento-card md:col-span-2 flex flex-col justify-center">
+            <h1 class="text-6xl font-bold mb-2">
+                Hi, I'm <span class="text-blue-500">Ayush Pasekar</span>
+            </h1>
+            <p class="text-gray-400 text-xl">This is my Resume</p>
+        </div>
+
+        <div class="bento-card flex flex-col items-center justify-center text-center">
+            <div class="relative mb-4">
+                <div class="w-4 h-4 bg-green-500 rounded-full"></div>
+                <div class="absolute inset-0 w-4 h-4 bg-green-500 rounded-full animate-ping"></div>
+            </div>
+            <h2 class="text-xl font-bold">Available for Work</h2>
+            <p class="text-gray-500">Based in Pune</p>
+        </div>
+
+        <div class="bento-card md:row-span-2">
+            <h3 class="text-2xl font-bold mb-6">Introduction</h3>
+            <p class="text-gray-400 leading-relaxed">
+                Highly motivated and innovative Developer and Patent Holder currently pursuing a degree at MIT ADT Pune. 
+                Expert in building intelligent systems using Agentic AI, Machine Learning, and Python. 
+                Proven ability to bridge the gap between complex network design and modern web development, 
+                with a specific focus on AI-powered automation and testing.
+            </p>
+        </div>
+
+        <div class="bento-card border-t-4 border-t-blue-500 flex flex-col justify-between h-full min-h-[280px]">
+            <div>
+                <h3 class="text-xl font-bold mb-4">Tech Stack</h3>
+                <div class="flex flex-wrap gap-2">
+                    <span class="px-3 py-1 rounded-full bg-blue-900/20 text-blue-400 border border-blue-800/30 text-xs font-semibold">Java</span>
+                    <span class="px-3 py-1 rounded-full bg-teal-900/20 text-teal-400 border border-teal-800/30 text-xs font-semibold">Python</span>
+                    <span class="px-3 py-1 rounded-full bg-orange-900/20 text-orange-400 border border-orange-800/30 text-xs font-semibold">Tailwind</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-900/20 text-purple-400 border border-purple-800/30 text-xs font-semibold">Figma</span>
+                </div>
+            </div>
+            <p class="text-gray-600 text-[10px] mt-4 uppercase tracking-widest">Skills & Tools</p>
+        </div>
+
+        <div class="bento-card border-t-4 border-t-purple-500 flex flex-col justify-between h-full min-h-[280px]">
+            <div>
+                <h3 class="text-xl font-bold mb-3">Certificates</h3>
+                <p class="text-gray-500 text-xs leading-relaxed">View and manage professional certifications and academic awards stored in MySQL.</p>
+            </div>
+            <a href="certificates.html" class="mt-6 block bg-purple-600 hover:bg-purple-700 text-white py-3 rounded-xl text-center text-xs font-bold transition shadow-lg shadow-purple-900/20">
+                MANAGE
+            </a>
+        </div>
+
+        <div class="bento-card border-t-4 border-t-blue-500 flex flex-col justify-between h-full min-h-[280px]">
+            <div>
+                <h3 class="text-xl font-bold mb-3">Experience</h3>
+                <p class="text-gray-500 text-xs leading-relaxed">Track your career milestones, internships, and professional roles from the database.</p>
+            </div>
+            <a href="experience.html" class="mt-6 block bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-center text-xs font-bold transition shadow-lg shadow-blue-900/20">
+                MANAGE
+            </a>
+        </div>
+
+        <div class="bento-card border-t-4 border-t-orange-500 flex flex-col justify-between h-full min-h-[280px]">
+            <div>
+                <h3 class="text-xl font-bold mb-3">Projects</h3>
+                <p class="text-gray-500 text-xs leading-relaxed">Explore GitHub links, Agentic AI systems, and live web application projects.</p>
+            </div>
+            <a href="projects.html" class="mt-6 block bg-orange-600 hover:bg-orange-700 text-white py-3 rounded-xl text-center text-xs font-bold transition shadow-lg shadow-orange-900/20">
+                VIEW ALL
+            </a>
+
+        </div>
+        
+
+    </div>
+
+        <script>
+            // Add this to your index.html script to show the latest job on the home page
+            async function showLatestExp() {
+                const res = await fetch('http://localhost:3000/api/experience');
+                const data = await res.json();
+                const display = document.getElementById('latestExp');
+                if(data.length > 0) {
+                    const latest = data[0]; // Gets the most recent entry
+                    display.innerHTML = `
+                        <p class="text-white font-bold">${latest.role}</p>
+                        <p class="text-blue-500 text-xs">${latest.company_name}</p>
+                        <p class="text-gray-500 text-[10px]">${latest.duration}</p>
+                    `;
+                }
+            }
+            showLatestExp();
+        </script>
+
+
+
+    <script>
+        // Placeholder for the fetch logic we'll add next to connect to your MySQL
+    </script>
+</body>
+</html>

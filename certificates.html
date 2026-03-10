@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Manage Certificates | Ayush Pasekar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0a0a0a; }
+        .bento-card { background-color: #121212; border: 1px solid #1f1f1f; border-radius: 1.5rem; padding: 2rem; }
+    </style>
+</head>
+<body class="text-white p-6 md:p-12">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold">Certificate <span class="text-blue-500">Manager</span></h1>
+            <a href="index.html" class="text-gray-400 hover:text-white transition">← Back to Portfolio</a>
+        </div>
+
+        <div class="bento-card mb-8">
+            <h2 class="text-xl font-semibold mb-4">Upload New Certificate</h2>
+            <form id="uploadForm" class="flex flex-col md:flex-row gap-4">
+                <input type="text" id="certTitle" placeholder="Certificate Name (e.g. AWS Certified)" 
+                       class="flex-1 bg-black border border-gray-800 p-3 rounded-xl focus:outline-none focus:border-blue-500" required>
+                <input type="file" id="certFile" accept=".pdf" class="text-sm py-2" required>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 px-8 py-3 rounded-xl font-bold transition">
+                    Upload to Database
+                </button>
+            </form>
+        </div>
+
+        <div id="certGrid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/certificates';
+
+        // 1. Fetch and Display
+        async function loadCerts() {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+            const grid = document.getElementById('certGrid');
+    
+            grid.innerHTML = ''; // Clear current grid
+
+            for (const cert of data) {
+                const card = document.createElement('div');
+                card.className = "bento-card flex flex-col items-center justify-between min-h-[250px] group";
+        
+                // Use a unique ID for each canvas
+                const canvasId = `canvas-${cert.id}`;
+        
+                card.innerHTML = `
+                    <div class="w-full h-40 bg-gray-900 rounded-xl mb-4 overflow-hidden border border-gray-800 relative">
+                        <canvas id="${canvasId}" class="w-full h-full object-cover"></canvas>
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors"></div>
+                    </div>
+                    <div class="w-full">
+                        <h3 class="font-bold text-sm mb-4 truncate">${cert.title}</h3>
+                        <div class="flex gap-2 w-full">
+                            <a href="http://localhost:3000/${cert.pdf_path}" target="_blank" 
+                            class="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg text-xs transition text-center">View</a>
+                            <button onclick="deleteCert(${cert.id})" 
+                                    class="flex-1 bg-red-900/20 text-red-500 hover:bg-red-500 hover:text-white py-2 rounded-lg text-xs transition">Delete</button>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+        
+                // Render the PDF page into the canvas
+                renderThumbnail(`http://localhost:3000/${cert.pdf_path}`, canvasId);
+            }
+        }
+
+        async function renderThumbnail(pdfUrl, canvasId) {
+            const loadingTask = pdfjsLib.getDocument(pdfUrl);
+            const pdf = await loadingTask.promise;
+            const page = await pdf.getPage(1);
+    
+            const canvas = document.getElementById(canvasId);
+            const context = canvas.getContext('2d');
+            const viewport = page.getViewport({ scale: 0.5 });
+    
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            await page.render({ canvasContext: context, viewport: viewport }).promise;
+        }
+
+        // 2. Handle Upload
+        document.getElementById('uploadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const formData = new FormData();
+            formData.append('title', document.getElementById('certTitle').value);
+            formData.append('pdf', document.getElementById('certFile').files[0]);
+
+            const res = await fetch(API_URL, { method: 'POST', body: formData });
+            if (res.ok) {
+                alert('Uploaded successfully!');
+                e.target.reset();
+                loadCerts();
+            }
+        };
+
+        // 3. Handle Delete
+        async function deleteCert(id) {
+            if(confirm('Are you sure? This removes it from the MySQL database.')) {
+                await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+                loadCerts();
+            }
+        }
+
+        loadCerts();
+    </script>
+</body>
+</html>
